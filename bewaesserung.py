@@ -13,6 +13,7 @@ from rpi_rf import RFDevice
 
 # Steckdosenparameter anpassen 
 # In diesem Fall verwenden wir den GPIO Port 17
+#
 
 gp=17
 an = 5510417
@@ -69,6 +70,7 @@ while True:
         time.sleep(2)
 
         # Daten von Sensor1 holen
+        name1 = "Sensor1"
         battery1 = sensor1.parameter_value('battery')
         temp1 = sensor1.parameter_value('temperature')
         light1 = sensor1.parameter_value('light')
@@ -86,16 +88,20 @@ while True:
 
         # Daten von Sensor2 holen
         # -- Auch zum auslesen der Parameter muss die Zahl hochgezählt werden. 
+        # name2 = "Sensor2"
         # battery2 = sensor1.parameter_value('battery')
         # temp2 = sensor1.parameter_value('temperature')
         # light2 = sensor1.parameter_value('light')
         # feucht2 = sensor1.parameter_value('moisture')
         # leit2 = sensor1.parameter_value('conductivity')
-
+        
         # time.sleep(2)
 
-        # Zum Testen kann man den auskommentierten unteren print aktiv setzten = # vor dem print("..") entfernen
-        # print("Datum:", Datum, "Zeit:", Zeit,"Batterie1:",battery1, "Temp1:",temp1,"Licht1:",light1,"Feucht1:",feucht1,"Leit1:",leit1)
+        # Zum Testen kann man den auskommentierten unteren print aktiv setzten = # vor dem print("..") entfernen.
+        # print("Name:", name1,"Datum:", Datum, "Zeit:", Zeit,"Batterie1:",battery1, "Temp1:",temp1,"Licht1:",light1,"Feucht1:",feucht1,"Leit1:",leit1)
+        
+        # Hier noch ein Beispiel mit einem zweiten Sensor.
+        # print("Name:", name2,"Datum:", Datum, "Zeit:", Zeit,"Batterie2:",battery2, "Temp2:",temp2,"Licht2:",light2,"Feucht2:",feucht2,"Leit2:",leit2)
 
         # Verbindung zur DB herstellen.
         # Die Verbindung wird folgendermassen aufgebaut:
@@ -109,25 +115,25 @@ while True:
         # Cursorfunktion in Variable schreiben
         cur = db.cursor()
 
-        # Daten in DB schreiben für Sensor 1
-        sql = "INSERT INTO bewaesserung (datum, zeit, battery, temp, light, feucht, leit) VALUES (%s, %s, %s, %s, %s, %s, %s)"
-        val = (Datum, Zeit, battery1, temp1, light1, feucht1, leit1)
-        cur.execute(sql, val)
-        cur.close()
-        db.commit()
-        db.close
+        # Daten in DB schreiben Sensor 1
+        sql1 = "INSERT INTO bewaesserung (datum, zeit, name, battery, temp, light, feucht, leit) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
+        val1 = (Datum, Zeit, name1, battery1, temp1, light1, feucht1, leit1)
+        cur.execute(sql1, val1)
         
         # -- Falls mehrere Sensoren verwendet werden möchten kann dieser Teil hier mehrfach wiederholt werden.
         # -- Dabei muss jeweils die Sensorbezeichnung herufgezählt werden und wie vorhin die Parameter hochgezählt werden.
         
         # Daten in DB schreiben für Sensor 2
-        # sql = "INSERT INTO bewaesserung (datum, zeit, battery, temp, light, feucht, leit) VALUES (%s, %s, %s, %s, %s, %s, %s)"
-        # val = (Datum, Zeit, battery2, temp2, light2, feucht2, leit2)
-        # cur.execute(sql, val)
-        # cur.close()
-        # db.commit()
-        # db.close
-
+        # sql2 = "INSERT INTO bewaesserung (datum, zeit, name, battery, temp, light, feucht, leit) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
+        # val2 = (Datum, Zeit, name2, battery2, temp2, light2, feucht2, leit2)
+        # cur.execute(sql2, val2)
+        
+        
+        cur.close()
+        db.commit()
+        db.close
+        
+        
         # -- Falls mehrere Sensoren verwendet werden, müssen wir nun die Feuchtigkeit durch die Anzahl Sensoren teilen.
         # -- mit 2 Sensoren        |   feucht = (feucht1 + feucht2)/2
         # -- oder mit 3 Sensoren   |   feucht = (feucht1 + feucht2 + feucht3)/3
